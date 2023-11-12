@@ -12,11 +12,12 @@ def mainMenu():
 
         if choice == '1':
             Lineal.createUser("usuarios.csv")
+
         elif choice == '2':
             usuario = Lineal.login()
             if usuario:
-            
                 Lineal.userMenu(usuario, Lineal.usuarios)
+                
         elif choice == '3':
             print("Saliendo del programa.")
             break

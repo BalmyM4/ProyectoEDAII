@@ -17,9 +17,6 @@ class Sucursal:
 
 listaSucursales = []
 
-def getLisaSucursales():
-    return listaSucursales
-
 # =========================== Leer Sucursales ===========================
 def readSucursales():
     global listaSucursales
@@ -75,5 +72,8 @@ def main():
 
     espera = input("Espera: ")
 
-
+def getListaSucursales():
+    readSucursales()
+    
+    return listaSucursales
 

@@ -1,6 +1,7 @@
 import csv
 import random
 import string
+
 ################################################################
 lista_usuarios = []
 usuarios = []
@@ -54,6 +55,7 @@ class Usuario:
         with open(archivo_general, 'a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([self.user, accion, cantidad])
+
 ####################################################################
 class Administrador(Usuario):
     def __init__(self, user, password, nip, numCard, indentifier, access_level):
