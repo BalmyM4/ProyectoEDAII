@@ -24,20 +24,6 @@ def calcularDistancia( x1, y1, x2, y2):
     distancia = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
     return distancia
 
-def calcularSucursal( sucursal ):
-    global listaSucursales
-
-    distancia = []
-    i = 0
-    lenList = len( listaSucursales )
-
-    while ( i < lenList ):
-        if ( sucursal.cordx != listaSucursales[i].cordx and sucursal.cordy != listaSucursales[i].cordy ):
-            distancia.append( calcularDistancia( sucursal.cordx, sucursal.cordy, listaSucursales[i].cordx, listaSucursales[i].cordy ) )
-        i += 1
-
-    return distancia
-
 # ========================== Crear Relaciones ===========================
 def encontrar_dos_mas_pequenos( lista ):
     if len(lista) < 2:
@@ -88,6 +74,35 @@ def crearRelaciones():
     
     addRelaciones()
 
+def newRelacion( ):
+    global listaRelaciones
+    global listaSucursales
+
+    sucursal = Sucursales_Init.newSucursales()
+
+    aux = Relaciones(0,0,None,None,0)
+
+    aux.distancias.append([])
+
+    j = 0
+    lenList = len( listaSucursales )
+
+    while ( j < lenList ):
+        if ( sucursal.cordx != listaSucursales[j].cordx and sucursal.cordy != listaSucursales[j].cordy ):
+            newDistancia = calcularDistancia( sucursal.cordx, sucursal.cordy, listaSucursales[j].cordx, listaSucursales[j].cordy )
+            newRelacion = Relaciones( sucursal.id, listaSucursales[j].id, sucursal, listaSucursales[j], newDistancia  )
+            aux.distancias[-1].append( newRelacion )
+        j += 1
+
+    l = encontrar_dos_mas_pequenos( aux.distancias[-1] )
+
+    file = open("Relaciones.csv", "a")
+
+    for arista in l:
+        datos =  str(arista.idx) + "," + str(arista.idy) + "," + str(arista.distancia) + "\n"
+        file.write( datos )
+
+    file.close()
 
 # =========================== Add Relaciones ============================
 def addRelaciones( ):
@@ -118,6 +133,7 @@ def readRelaciones():
 
 # =========================== Main Relations ===========================
 def main():
-    crearRelaciones()
+    #crearRelaciones()
+    newRelacion( )
 
-main()
+#main()
