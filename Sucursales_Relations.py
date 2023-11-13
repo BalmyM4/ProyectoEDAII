@@ -20,11 +20,13 @@ listaRelaciones = []
 listaSucursales = Sucursales_Init.getListaSucursales()
 
 # ========================= Calcular Distancia ==========================
+
+# Calcula la distancia entre dos puntos:
 def calcularDistancia( x1, y1, x2, y2):
     distancia = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
     return distancia
 
-# ========================== Crear Relaciones ===========================
+# Encuentra las relaciones más pequeñas de una lista:
 def encontrar_dos_mas_pequenos( lista ):
     if len(lista) < 2:
         return None
@@ -43,7 +45,10 @@ def encontrar_dos_mas_pequenos( lista ):
     elements_mas_pequenos = [menor1, menor2]
 
     return elements_mas_pequenos
-               
+
+# ========================== Crear Relaciones ===========================
+
+# Crea todas las relaciones y sobreescribe el archivo:
 def crearRelaciones():
     global listaRelaciones
     global listaSucursales
@@ -74,6 +79,7 @@ def crearRelaciones():
     
     addRelaciones()
 
+# Agrega una nueva sucursal y agrega las relaciones correspondientes:
 def newRelacion( ):
     global listaRelaciones
     global listaSucursales
@@ -95,6 +101,7 @@ def newRelacion( ):
         j += 1
 
     l = encontrar_dos_mas_pequenos( aux.distancias[-1] )
+    listaRelaciones.append( l )
 
     file = open("Relaciones.csv", "a")
 
@@ -105,6 +112,8 @@ def newRelacion( ):
     file.close()
 
 # =========================== Add Relaciones ============================
+
+# Sobreescribe el archivo con todas las relaciones existentes en la lista:
 def addRelaciones( ):
     global listaRelaciones
 
@@ -117,23 +126,13 @@ def addRelaciones( ):
 
     file.close()
 
-# =========================== Leer Sucursales ===========================
-def readRelaciones():
-    newlistaRelaciones = []
+# ========================== Leer Relaciones ===========================
 
-    file = open("Sucursales.csv", "r")
-    
-    for line in file:
-        datos = line.strip().split(",")
-        newlistaRelaciones.append( Relaciones( datos[0], datos[1] ) )
-
-    file.close()
-
-    return newlistaRelaciones
+# Lee el archivo relaciones:
 
 # =========================== Main Relations ===========================
 def main():
-    #crearRelaciones()
+    crearRelaciones()
     newRelacion( )
 
-#main()
+main()

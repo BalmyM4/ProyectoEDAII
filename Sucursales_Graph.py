@@ -1,3 +1,6 @@
+import Sucursales_Init
+import Sucursales_Relations
+
 MAXV = 0
 
 # ================================== Clases ====================================
@@ -5,6 +8,10 @@ class Node:
     to = 0
     cost = 0
     nxt = None
+
+    def __init__(self, sucursal, sucursalto):
+        self.sucursal = sucursal
+        self.sucursalto = sucursalto
 
 class Grafo:
     # Aristas adyacentes:
@@ -20,6 +27,7 @@ class Grafo:
 def iniciar_grafo ( grafo ):
     grafo.num_nodes = 0
     grafo.num_edges = 0
+
     i = 0
     while ( i <= MAXV ):
         grafo.grado.append(0)
@@ -31,8 +39,8 @@ def iniciar_grafo ( grafo ):
         i += 1
 
 # ================================ Crear arista ================================
-def insert_edge ( grafo, intU, intV, cost, isDirected ):
-    item = Node()
+def insert_edge ( grafo, intU, intV, cost, isDirected, uSucursal, vSucursal ):
+    item = Node(uSucursal, vSucursal)
 
     item.cost = cost
     item.to = intV
@@ -42,29 +50,31 @@ def insert_edge ( grafo, intU, intV, cost, isDirected ):
     grafo.grado[intU] += 1
 
     if ( isDirected == False ) and ( intV != intU ):
-        insert_edge (grafo, intV, intU, cost, True )
+        insert_edge (grafo, intV, intU, cost, True, vSucursal, uSucursal )
     else:
         grafo.num_edges += 1
 
 # ================================ Crear grafo =================================
 def crear_grafo ( grafo, hasCost ):
+    listaRelaciones = Sucursales_Relations.listaRelaciones
+
     i = 0
+    j = 0
     u = v = cost = 0
     number_edges = grafo.num_edges
 
     while ( i < number_edges ):
-        print("\nCrea arista (u, v)")
-        u = int(input('\n\tu: '))
-        v = int(input('\tv: '))
+        while ( j < 2 ):
+            u = int( listaRelaciones[i][j].idx )
+            v = int( listaRelaciones[i][j].idy )
+            uSucursal = listaRelaciones[i][j].sucursalx
+            vSucursal = listaRelaciones[i][j].sucursaly
 
-        if ( hasCost == True ):
-            print("\nInsertar costo o peso de la arista:")
-            cost = int(input('\n\tCost / weight: '))
-        else:
-            cost = 1
+            cost = float(listaRelaciones[i][j].distancia * 10)
 
-        # insert edge on the adjacent list
-        insert_edge( grafo, u, v, cost, grafo.directed )
+            # insert edge on the adjacent list
+            insert_edge( grafo, u, v, cost, grafo.directed, uSucursal, vSucursal )
+            j += 1
         i += 1
 
 # =============================== Imprimir grafo ===============================
@@ -84,6 +94,29 @@ def imprimir_grafo ( grafo ):
     print(string)
     print()
 
+# ================================ Grafo nuevo =================================
+def newGraf():
+    global MAXV
+    cost = 0
+    hasCost = True
+
+    # Número de sucursales = número de aristas
+    num_nodes = len(Sucursales_Init.getListaSucursales())
+
+    # Iniciamos los nodos o vertices del grafo:
+    MAXV = num_nodes
+    iniciar_grafo(obj_grafo)
+
+    obj_grafo.num_nodes = num_nodes
+    obj_grafo.directed = False
+
+    # Preguntamos número de aristas:
+    Sucursales_Relations.crearRelaciones()
+    obj_grafo.num_edges = len( Sucursales_Relations.listaRelaciones )
+    
+    # Creamos el grafo:
+    crear_grafo(obj_grafo, hasCost)
+
 # ==================================== Menú ====================================
 def mostrar_menu():
     print("1. Leer grafo")
@@ -98,37 +131,15 @@ def opcion_2():
     print("Has elegido la Opción 2")
 
 def opcion_3():
-    print("Has elegido la Opción 3")
+    imprimir_grafo(obj_grafo)
 
 def opcion_4():
-    print("Has elegido la Opción 4")
+    print("Salir")
 
 # ==================================== Main ====================================
 def main():
-    global MAXV
-    cost = 0
-    hasCost = True
-
-    # Preguntamos número de vertices o nodos:
-    print("\nNúmero de vertices: ", end="")
-    num_nodes = int(input())
-
-    # Iniciamos los nodos o vertices del grafo:
-    MAXV = num_nodes
-    iniciar_grafo(obj_grafo)
-
-    obj_grafo.num_nodes = num_nodes
-    obj_grafo.directed = False
-
-    # Preguntamos número de aristas:
-    print("\nNúmero de aristas: ", end="")
-    obj_grafo.num_edges = int(input())
     
-    # Creamos el grafo:
-    crear_grafo(obj_grafo, hasCost)
-
-    # Imprimimos el grafo:
-    imprimir_grafo(obj_grafo)
+    newGraf()
 
     while True:
         mostrar_menu()

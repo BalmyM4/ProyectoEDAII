@@ -10,11 +10,12 @@ class Sucursal:
         self.name = name
         self.cordx = float(cordx)
         self.cordy = float(cordy)
+        #self.data = data
 
     def __str__(self):
         datos = str(self.id) + ", " + str(self.name) + ", " + str(self.cordx) + ", " + str(self.cordy)
         return datos
-
+    
 
 listaSucursales = []
 
@@ -63,6 +64,12 @@ def printSucursales():
     for sucursal in listaSucursales:
         print(sucursal)
 
+# ========================== Get Sucursales ==========================
+
+def getListaSucursales():
+    readSucursales()
+    return listaSucursales
+
 # =========================== Main Sucursales ===========================
 def main():
     readSucursales()
@@ -75,8 +82,5 @@ def main():
 
     espera = input("Espera: ")
 
-def getListaSucursales():
-    readSucursales()
-    return listaSucursales
 
 #main()
