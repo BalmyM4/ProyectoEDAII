@@ -15,9 +15,10 @@ class Relaciones():
     
     def __str__(self):
         datos = str(self.idx)  + ", " + str(self.idy)
+        return datos
 
 listaRelaciones = []
-listaSucursales = Sucursales_Init.getListaSucursales()
+listaSucursales = Sucursales_Init.listaSucursales
 
 # ========================= Calcular Distancia ==========================
 
@@ -129,10 +130,7 @@ def addRelaciones( ):
 # ========================== Leer Relaciones ===========================
 
 # Lee el archivo relaciones:
+def readRelaciones():
+    global listaRelaciones
 
-# =========================== Main Relations ===========================
-def main():
-    crearRelaciones()
-    newRelacion( )
-
-main()
+    return listaRelaciones

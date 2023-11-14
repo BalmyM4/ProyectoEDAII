@@ -1,6 +1,5 @@
 
 import Decoracion
-#import Sucursales_Relations
 
 # ======================== Variables Sucursales ========================
 class Sucursal:
@@ -39,7 +38,6 @@ def newSucursales():
     newName = input("\tDame nombre: ")
     newCordx = float(input("\tDame cord x: "))
     newCordy = float(input("\tDame cord y: "))
-    Decoracion.decoracion()
 
     newSucursal = Sucursal( newId, newName, newCordx, newCordy )
     addSucursales( newSucursal )
@@ -68,6 +66,7 @@ def printSucursales():
 
 def getListaSucursales():
     readSucursales()
+
     return listaSucursales
 
 # =========================== Main Sucursales ===========================

@@ -1,7 +1,6 @@
 import Sucursales_Init
 import Sucursales_Relations
-
-MAXV = 0
+import Decoracion
 
 # ================================== Clases ====================================
 class Node:
@@ -9,132 +8,198 @@ class Node:
     cost = 0
     nxt = None
 
+    # BFS
+    prev = None
+
+    # color: 0-blank, 1-gray, 2-black
+    color = 0
+    distance = -1
+
     def __init__(self, sucursal, sucursalto):
         self.sucursal = sucursal
         self.sucursalto = sucursalto
 
-class Grafo:
-    # Aristas adyacentes:
-    edges = []
-    # Grado de cada nodo:
-    grado = []
+class Graph:
+# ================================ Init graph ================================    
+    def __init__ (self, numNodes, numEdges, cost):
+        self.edges = [] 
+        self.grade = []
+        self.numNodes = numNodes
+        self.numEdges = numEdges
+        self.directed = False
+        self.hasCost = True if cost == 1 else False
 
-    num_nodes = 0
-    num_edges = 0
-    directed = False
-
-# =============================== Iniciar grafo ================================
-def iniciar_grafo ( grafo ):
-    grafo.num_nodes = 0
-    grafo.num_edges = 0
-
-    i = 0
-    while ( i <= MAXV ):
-        grafo.grado.append(0)
-        i += 1
-
-    i = 0
-    while ( i <= MAXV ):
-        grafo.edges.append(None)
-        i += 1
+        i = 0
+        while i <= self.numNodes:
+            self.grade.append(0) 
+            self.edges.append(None)
+            i += 1
 
 # ================================ Crear arista ================================
-def insert_edge ( grafo, intU, intV, cost, isDirected, uSucursal, vSucursal ):
-    item = Node(uSucursal, vSucursal)
+    def insert_edge(self, intU, intV, intCost, isDirected, uSucursal, vSucursal):
 
-    item.cost = cost
-    item.to = intV
-    item.nxt = grafo.edges[intU]
+        item = Node( uSucursal, vSucursal )
+        item.cost = intCost
+        item.to = intV
+        item.nxt = self.edges[intU]
 
-    grafo.edges[intU] = item
-    grafo.grado[intU] += 1
+        self.edges [intU] = item
+        self.grade [intU] += 1
 
-    if ( isDirected == False ) and ( intV != intU ):
-        insert_edge (grafo, intV, intU, cost, True, vSucursal, uSucursal )
-    else:
-        grafo.num_edges += 1
+        if ( isDirected == False ) and ( intV != intU ):
+            self.insert_edge(intV, intU, intCost, True, vSucursal, uSucursal)
 
 # ================================ Crear grafo =================================
-def crear_grafo ( grafo, hasCost ):
-    listaRelaciones = Sucursales_Relations.listaRelaciones
+    def crear_grafo (self):
+        global listaRelaciones
 
-    i = 0
-    j = 0
-    u = v = cost = 0
-    number_edges = grafo.num_edges
+        i = 1
+        j = 0
+        while i <= self.numEdges:
+            j = 0
+            while ( j < 2 ):
+                u = int( listaRelaciones[i-1][j].idx )
+                v = int( listaRelaciones[i-1][j].idy )
+                uSucursal = listaRelaciones[i-1][j].sucursalx
+                vSucursal = listaRelaciones[i-1][j].sucursaly
 
-    while ( i < number_edges ):
-        while ( j < 2 ):
-            u = int( listaRelaciones[i][j].idx )
-            v = int( listaRelaciones[i][j].idy )
-            uSucursal = listaRelaciones[i][j].sucursalx
-            vSucursal = listaRelaciones[i][j].sucursaly
+                cost = float(listaRelaciones[i-1][j].distancia * 10)
 
-            cost = float(listaRelaciones[i][j].distancia * 10)
-
-            # insert edge on the adjacent list
-            insert_edge( grafo, u, v, cost, grafo.directed, uSucursal, vSucursal )
-            j += 1
-        i += 1
+                self.insert_edge( u, v, cost, self.directed, uSucursal, vSucursal )
+                j += 1
+            i += 1
 
 # =============================== Imprimir grafo ===============================
-def imprimir_grafo ( grafo ):
-    i = 1
-    item = None
-    print("\nADJACENT LIST:")
-    string = ""
-    while i <= grafo.num_nodes:
-        string += str(i) + "\t"
-        item = grafo.edges[i]
-        while item != None:
-            string += str(item.to) + ": " + str(item.cost) +"\t"
-            item = item.nxt
-        string += "\n"
-        i += 1
-    print(string)
-    print()
+    def print(self): 
+        i = 1
+        item = None 
+        string=""
+
+        while ( i <= self.numNodes ): 
+            string += str(i) + "\t" 
+            item = self.edges[i]
+
+            while item != None:
+                string += str(item.to) + ": " + str(item.cost) + "\t"
+                item = item.nxt
+
+            string += "\n"
+            i += 1
+
+        print(string)
+
+# =============================== BFS ===============================
+    #color: blank, 1 gray, 2 - black 
+    def breadth_first_search(self, intSource):                                     
+        self.edges[intSource].color = 1                                            
+        self.edges[intSource].distance = 0                                         
+        self.edges[intSource].prev = None                                          
+        queue = []                                                                 
+        queue.append(intSource)                                                    
+                                                                                
+        while len(queue) != 0:                                                     
+            u = queue.pop(0)                                                       
+            v = self.edges[u]                                                      
+                                                                                
+            while v != None:                                                       
+                if ( self.edges[v.to] != None ):                                   
+                    if ( self.edges[v.to].color == 0 ):                            
+                        self.edges[v.to].color = 1                                 
+                        self.edges[v.to].distance = self.edges[u].distance + 1     
+                        self.edges[v.to].prev = u                                  
+                        queue.append(v.to)                                         
+                v = v.nxt                                                          
+            self.edges[u].color = 2                                                
+                                                                                
+                                                                                
+    def print_color(self):
+        i = 1
+        print("BREADTH FIRST SEARCH:") 
+        string = ""
+
+        while ( i <= self.numNodes ):
+            if ( self.edges [i] != None ):
+                if ( self.edges[i].color == 0 ):
+                    color = "blank"
+                    
+                elif ( self.edges[i].color == 1 ):
+                    color = "gray"
+
+                else:
+                    color = "black"
+
+                cont = 0
+                tabs = ""
+
+                while ( cont < self.edges[i].distance ):
+                    tabs += "\t"
+                    cont += 1
+
+                string += tabs + str(i) + ": " + color + "-" + str(self.edges[i].distance) + "-" + str(self.edges[i].sucursal.id) + "\t" 
+                string += "\n"
+            i += 1
+        print(string)
 
 # ================================ Grafo nuevo =================================
 def newGraf():
-    global MAXV
+    global listaRelaciones
+    global objGraph
+
     cost = 0
     hasCost = True
 
-    # Número de sucursales = número de aristas
-    num_nodes = len(Sucursales_Init.getListaSucursales())
+    # Número de sucursales = número de vertices
+    num_nodes = len(Sucursales_Init.listaSucursales)
 
-    # Iniciamos los nodos o vertices del grafo:
-    MAXV = num_nodes
-    iniciar_grafo(obj_grafo)
-
-    obj_grafo.num_nodes = num_nodes
-    obj_grafo.directed = False
-
-    # Preguntamos número de aristas:
+    # Número de aristas:
     Sucursales_Relations.crearRelaciones()
-    obj_grafo.num_edges = len( Sucursales_Relations.listaRelaciones )
-    
-    # Creamos el grafo:
-    crear_grafo(obj_grafo, hasCost)
+    listaRelaciones = Sucursales_Relations.listaRelaciones
+
+    num_edges = len( listaRelaciones )
+
+    source = 1
+
+    objGraph = Graph(num_nodes, num_edges, True)
+    objGraph.crear_grafo()
 
 # ==================================== Menú ====================================
 def mostrar_menu():
-    print("1. Leer grafo")
-    print("2. Agregar vertice")
-    print("3. Imprimir grafo")
-    print("q. Salir")
+    Decoracion.decoracion()
+    print("\t\t\tMenú de sucursales.")
+    Decoracion.decoracion()
+    print("\t1. Leer grafo")
+    print("\t2. Agregar sucursal")
+    print("\t3. Imprimir grafo")
+    print("\t4. Imprimir lista sucursales")
+    print("\t5. BFS")
+    print("\tq. Salir")
 
 def opcion_1():
-    print("Has elegido la Opción 1")
+    global listaRelaciones
+
+    Decoracion.decoracion()
+    listaRelaciones = Sucursales_Relations.readRelaciones()
 
 def opcion_2():
-    print("Has elegido la Opción 2")
+    global objGraph
+
+    Sucursales_Relations.newRelacion()
+    newGraf()
 
 def opcion_3():
-    imprimir_grafo(obj_grafo)
+    global objGraph
+    Decoracion.decoracion()
+    objGraph.print()
 
 def opcion_4():
-    print("Salir")
+    Decoracion.decoracion()
+    Sucursales_Init.printSucursales()
+
+def opcion_5():
+    global objGraph
+    Decoracion.decoracion()
+    objGraph.breadth_first_search(1)
+    objGraph.print_color()
 
 # ==================================== Main ====================================
 def main():
@@ -143,7 +208,7 @@ def main():
 
     while True:
         mostrar_menu()
-        seleccion = input("Elija una opción (1-4) o 'q' para salir: ")
+        seleccion = input("\n\tOpción: ")
 
         if ( seleccion == '1' ):
             opcion_1()
@@ -153,14 +218,25 @@ def main():
 
         elif ( seleccion == '3' ):
             opcion_3()
+        
+        elif ( seleccion == '4' ):
+            opcion_4()
+
+        elif ( seleccion == '5' ):
+            opcion_5()    
 
         elif ( seleccion.lower() == 'q' ):
-            print("Saliendo del programa. ¡Hasta luego!")
+            Decoracion.decoracion()
+            print("\t\tSaliendo.")
+            Decoracion.decoracion()
             break
 
         else:
-            print("Opción no válida.")
+            Decoracion.decoracion()
+            print("\tError: Opción no válida.")
 
 
-obj_grafo = Grafo()
+Sucursales_Init.getListaSucursales()
+objGraph = None
+        
 main()
